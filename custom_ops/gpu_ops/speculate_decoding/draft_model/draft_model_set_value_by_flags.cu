@@ -27,13 +27,12 @@ __global__ void update_pre_ids_kernel(const int64_t* draft_tokens,
     int64_t* pre_ids_all_now = pre_ids_all + tid * pre_id_length;
     const int64_t* draft_token_now = draft_tokens + tid * max_draft_token;
     const int seq_len_this_time = seq_lens_this_time[tid];
-    if (step_idx[tid] - 1 > 0 /*Decoder Step*/) {
+    if (step_idx[tid] > 0 /*Decoder Step*/) {
       for (int i = 0; i < seq_len_this_time; ++i) {
-        pre_ids_all_now[step_idx[tid] - i] =
-            draft_token_now[seq_len_this_time - 1 - i];
+        pre_ids_all_now[step_idx[tid] + i] = draft_token_now[i];
       }
-    } else if (step_idx[tid] == 1 /*Encoder Step*/) {
-      pre_ids_all_now[1] = draft_token_now[0];
+    } else if (step_idx[tid] == 0 /*Encoder Step*/) {
+      pre_ids_all_now[0] = draft_token_now[0];
     }
     seq_lens_this_time[tid] = 1;
   }
