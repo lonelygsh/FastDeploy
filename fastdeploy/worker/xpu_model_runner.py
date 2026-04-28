@@ -595,6 +595,7 @@ class XPUModelRunner(ModelRunnerBase):
                 prefill_start_index = request.prefill_start_index
                 prefill_end_index = request.prefill_end_index
                 length = prefill_end_index - prefill_start_index
+                self.share_inputs["reasoning_status"][idx : idx + 1, :] = 0
                 if request.get("enable_thinking", False) and request.get("reasoning_max_tokens", None) is not None:
                     # Enable thinking
                     self.share_inputs["max_think_lens"][idx : idx + 1, :] = request.get("reasoning_max_tokens")
@@ -794,6 +795,7 @@ class XPUModelRunner(ModelRunnerBase):
                     )[0]
                     self.share_inputs["seq_lens_decoder"][idx : idx + 1] = 0
 
+                self.share_inputs["reasoning_status"][idx : idx + 1, :] = 0
                 if request.get("enable_thinking", False) and request.get("reasoning_max_tokens", None) is not None:
                     # Enable thinking
                     self.share_inputs["max_think_lens"][idx : idx + 1, :] = request.get("reasoning_max_tokens")
